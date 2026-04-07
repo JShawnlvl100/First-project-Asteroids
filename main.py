@@ -28,7 +28,7 @@ def main():
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
-    
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     while True:
         log_state()
         for event in pygame.event.get():
@@ -39,7 +39,6 @@ def main():
         updatable.update(dt)
         if score > high_score:
             high_score = score
-        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         screen.fill("black")
         score_surface = font.render(f"High Score: {high_score}", True, (255, 255, 255))
         screen.blit(score_surface, (10, 10))
