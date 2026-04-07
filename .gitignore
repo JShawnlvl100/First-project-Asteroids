@@ -12,3 +12,4 @@ wheels/
 # Added files
 game_state.jsonl
 game_events.jsonl
+highscore.txt

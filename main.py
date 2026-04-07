@@ -1,5 +1,6 @@
 import pygame
 import sys
+from score import *
 from constants import * 
 from logger import log_state
 from logger import log_event
@@ -9,6 +10,9 @@ from asteroidfield import *
 
 def main():
     pygame.init()
+    high_score = load_high_score()
+    score = 0
+    font = pygame.font.SysFont("Arial", 36)
     shots = pygame.sprite.Group()
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -33,19 +37,27 @@ def main():
         dt_ms = clock.tick(60)
         dt = dt_ms / 1000
         updatable.update(dt)
+        if score > high_score:
+            high_score = score
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         screen.fill("black")
+        score_surface = font.render(f"High Score: {high_score}", True, (255, 255, 255))
+        screen.blit(score_surface, (10, 10))
+        score_surface2 = font.render(f"Score: {score}", True, (255, 255, 255))
+        screen.blit(score_surface2, (1060, 10))
         for draw in drawable:
             draw.draw(screen)
         for asteroid in asteroids:
             if asteroid.collides_with(player) == True:
                 log_event("player_hit")
+                save_high_score(score)
                 print("Game over!")
                 sys.exit()
         for asteroid in asteroids:
             for shot in shots:
                 if asteroid.collides_with(shot) == True:
                     log_event("asteroid_shot")
+                    score += 20
                     asteroid.split()
                     shot.kill()
         
