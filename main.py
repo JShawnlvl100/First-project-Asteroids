@@ -9,6 +9,7 @@ from asteroid import *
 from asteroidfield import *
 from particle import *
 from powers import *
+from sounds import sounds
 
 def main():
     pygame.init()
@@ -53,6 +54,7 @@ def main():
             draw.draw(screen)
         for powerup in powerups:
             if powerup.collides_with(player):
+                sounds.powerup.play()
                 player.has_shield = True
                 powerup.kill()
                 print("shield activated!")
@@ -76,6 +78,7 @@ def main():
                     log_event("asteroid_shot")
                     score += 20
                     asteroid.split()
+                    sounds.explosion.play()
                     shot.kill()
         
         pygame.display.flip()

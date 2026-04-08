@@ -5,6 +5,7 @@ from constants import PLAYER_TURN_SPEED
 from constants import PLAYER_SPEED
 from constants import PLAYER_SHOOT_SPEED
 from shot import *
+from sounds import sounds
 
 class Player(CircleShape):
     def __init__(self, x, y):
@@ -77,11 +78,13 @@ class Player(CircleShape):
             else:
                 self.shot_cooldown_timer = PLAYER_SHOOT_COOLDOWN_SECONDS
                 self.shoot()
+                sounds.shoot.play()
         if keys[pygame.K_f] and self.warp_cooldown <= 0:
             self.is_warping = True
         else:
             if self.is_warping:
                 self.execute_warp()
+                sounds.warp.play()
                 self.is_warping = False
                 self.warp_cooldown = self.WARP_COOLDOWN_MAX
 
