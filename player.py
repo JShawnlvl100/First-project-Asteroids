@@ -11,6 +11,8 @@ class Player(CircleShape):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
         self.shot_cooldown_timer = 0
+        self.has_shield = False
+        self.invulnerable_timer = 0
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -20,10 +22,20 @@ class Player(CircleShape):
         c = self.position - forward * self.radius + right
         return [a, b, c]
     def draw(self, screen):
+        if self.invulnerable_timer > 0:
+            if int(self.invulnerable_timer * 10) % 2 == 0:
+                return
         pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
+        if self.has_shield:
+            pygame.draw.circle(screen, (0,255,0), self.position,
+                                self.radius + 5, 2)
+        
+
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
     def update(self, dt):
+        if self.invulnerable_timer > 0:
+            self.invulnerable_timer -= dt
         self.shot_cooldown_timer -= dt
         keys = pygame.key.get_pressed()
 

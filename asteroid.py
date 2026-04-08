@@ -2,6 +2,7 @@ from circleshape import *
 from logger import log_event
 from constants import *
 from particle import Particle
+from powers import PowerUp
 import random
 
 class Asteroid(CircleShape):
@@ -27,6 +28,8 @@ class Asteroid(CircleShape):
             new_particle.velocity = particle_velocity
 
         if self.radius <= ASTEROID_MIN_RADIUS:
+            if random.random() < 0.10:
+                new_powerup = PowerUp(self.position.x, self.position.y, POWERUP_RADIUS)
             return
         log_event("asteroid_split")
         new_angle = random.uniform(20, 50)

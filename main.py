@@ -8,6 +8,7 @@ from player import *
 from asteroid import *
 from asteroidfield import *
 from particle import *
+from powers import *
 
 def main():
     pygame.init()
@@ -18,6 +19,8 @@ def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    powerups = pygame.sprite.Group()
+    PowerUp.containers = (drawable, updatable, powerups)
     AsteroidField.containers = (updatable)
     Asteroid.containers = (asteroids, updatable, drawable)
     Player.containers = (updatable, drawable)
@@ -48,12 +51,25 @@ def main():
         screen.blit(score_surface2, (1060, 10))
         for draw in drawable:
             draw.draw(screen)
+        for powerup in powerups:
+            if powerup.collides_with(player):
+                player.has_shield = True
+                powerup.kill()
+                print("shield activated!")
         for asteroid in asteroids:
-            if asteroid.collides_with(player) == True:
+            if asteroid.collides_with(player):
+                if player.invulnerable_timer > 0:
+                    continue
                 log_event("player_hit")
-                save_high_score(score)
-                print("Game over!")
-                sys.exit()
+                if player.has_shield:
+                    player.has_shield = False
+                    player.invulnerable_timer = 1
+                    asteroid.split()
+                else:
+                    if score >= high_score:
+                        save_high_score(score)
+                    print("Game over!")
+                    sys.exit()
         for asteroid in asteroids:
             for shot in shots:
                 if asteroid.collides_with(shot) == True:
