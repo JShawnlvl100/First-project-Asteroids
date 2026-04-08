@@ -7,6 +7,7 @@ from logger import log_event
 from player import *
 from asteroid import *
 from asteroidfield import *
+from particle import *
 
 def main():
     pygame.init()
@@ -20,6 +21,7 @@ def main():
     AsteroidField.containers = (updatable)
     Asteroid.containers = (asteroids, updatable, drawable)
     Player.containers = (updatable, drawable)
+    Particle.containers = (updatable, drawable)
     Shot.containers = (shots, drawable, updatable)
     clock = pygame.time.Clock()
     dt = 0
