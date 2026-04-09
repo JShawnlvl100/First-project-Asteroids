@@ -1,5 +1,6 @@
 import pygame
 import sys
+import platform
 from score import *
 from constants import * 
 from logger import log_state
@@ -13,7 +14,11 @@ from sounds import sounds
 from screens import *
 
 def main():
+    if platform.system() == "Windows":
+        os.environ['SDL_AUDIODRIVER'] = 'directsound'
+    pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
+    sounds.load_assets()
     state = "START"
     is_paused = False
     high_score = load_high_score()
