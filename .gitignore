@@ -8,8 +8,11 @@ wheels/
 
 # Virtual environments
 .venv
+venv_win
+/venv
 
 # Added files
 game_state.jsonl
 game_events.jsonl
 highscore.txt
+main.spec
