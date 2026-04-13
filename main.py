@@ -12,6 +12,11 @@ from particle import *
 from powers import *
 from sounds import sounds
 from screens import *
+from difficulty import *
+RESOLUTIONS = [
+    (1280, 720),
+    (1920,1080),
+]
 
 def main():
     if platform.system() == "Windows":
@@ -19,6 +24,8 @@ def main():
     pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
     sounds.load_assets()
+    resolution_index = 0
+    SCREEN_WIDTH, SCREEN_HEIGHT = RESOLUTIONS[resolution_index]
     state = "START"
     is_paused = False
     high_score = load_high_score()
@@ -31,13 +38,15 @@ def main():
     asteroids = pygame.sprite.Group()
     powerups = pygame.sprite.Group()
     PowerUp.containers = (drawable, updatable, powerups)
-    AsteroidField.containers = (updatable)
+    AsteroidField.containers = ()
     Asteroid.containers = (asteroids, updatable, drawable)
     Player.containers = (updatable, drawable)
     Particle.containers = (updatable, drawable)
     Shot.containers = (shots, drawable, updatable)
     clock = pygame.time.Clock()
     dt = 0
+    difficulty = Difficulty()
+    speed_multiplier = 1
     asteroidfield = AsteroidField()
     player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
@@ -50,16 +59,26 @@ def main():
             if event.type == pygame.QUIT:
                 return
             if state == "START":
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
+                    resolution_index = (resolution_index + 1) % len(RESOLUTIONS)
+                    SCREEN_WIDTH, SCREEN_HEIGHT = RESOLUTIONS[resolution_index]
+                    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     for sprite in updatable:
                         sprite.kill()
                     player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
                     asteroidfield = AsteroidField()
                     score = 0
+                    speed_multiplier = 1
+                    difficulty = Difficulty()
                     state = "PLAYING"
             elif state == "PLAYING":
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                         is_paused = not is_paused
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_EQUALS:
+                        score += 2000
+                        print("score boosted:", score)
             elif state == "GAME_OVER":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r: # 'R' to Restart
@@ -68,6 +87,10 @@ def main():
                         return
         dt_ms = clock.tick(60)
         dt = dt_ms / 1000
+        if difficulty.has_increased(score):
+            speed_multiplier = difficulty.get_multiplier(score)
+            for asteroid in asteroids:
+                asteroid.apply_speed_multiplier(speed_multiplier)
         if score > high_score:
             high_score = score
         screen.fill("black")
@@ -81,6 +104,7 @@ def main():
             for draw in drawable:
                 draw.draw(screen)
             if not is_paused:
+                asteroidfield.update(dt, speed_multiplier)
                 updatable.update(dt)
                 for asteroid in asteroids:
                     for shot in shots:
