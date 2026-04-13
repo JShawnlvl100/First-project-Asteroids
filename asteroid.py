@@ -19,6 +19,7 @@ class Asteroid(CircleShape):
         pygame.draw.circle(screen, "white", self.position, self.radius, LINE_WIDTH)
 
     def update(self, dt):
+        from constants import SCREEN_HEIGHT, SCREEN_WIDTH
         self.position += self.velocity * dt
 
         if self.position.x > SCREEN_WIDTH + self.radius:

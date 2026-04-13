@@ -52,6 +52,7 @@ class Player(CircleShape):
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
     def update(self, dt):
+        from constants import SCREEN_HEIGHT, SCREEN_WIDTH
         if self.invulnerable_timer > 0:
             self.invulnerable_timer -= dt
         self.shot_cooldown_timer -= dt
@@ -59,8 +60,15 @@ class Player(CircleShape):
             self.warp_cooldown -= dt
         
         #screen wrapping logic
-        self.position.x %= SCREEN_WIDTH
-        self.position.y %= SCREEN_HEIGHT
+        if self.position.x > SCREEN_WIDTH + self.radius:
+            self.position.x = -self.radius
+        elif self.position.x < -self.radius:
+            self.position.x = SCREEN_WIDTH + self.radius
+
+        if self.position.y > SCREEN_HEIGHT + self.radius:
+            self.position.y = -self.radius
+        elif self.position.y < -self.radius:
+            self.position.y = SCREEN_HEIGHT + self.radius
 
         keys = pygame.key.get_pressed()
 

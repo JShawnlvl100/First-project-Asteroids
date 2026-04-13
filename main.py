@@ -19,6 +19,7 @@ RESOLUTIONS = [
 ]
 
 def main():
+    os.environ["SDL_VIDEO_CENTERED"] = "1"
     if platform.system() == "Windows":
         os.environ['SDL_AUDIODRIVER'] = 'directsound'
     pygame.mixer.pre_init(44100, -16, 2, 512)
@@ -47,7 +48,7 @@ def main():
     dt = 0
     difficulty = Difficulty()
     speed_multiplier = 1
-    asteroidfield = AsteroidField()
+    asteroidfield = AsteroidField(SCREEN_WIDTH, SCREEN_HEIGHT)
     player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
@@ -60,14 +61,21 @@ def main():
                 return
             if state == "START":
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
+                    import constants
                     resolution_index = (resolution_index + 1) % len(RESOLUTIONS)
                     SCREEN_WIDTH, SCREEN_HEIGHT = RESOLUTIONS[resolution_index]
+                    pygame.display.quit()
+                    os.environ["SDL_VIDEO_CENTERED"] = "1"
+                    pygame.display.init()
                     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+                    constants.SCREEN_WIDTH = SCREEN_WIDTH
+                    constants.SCREEN_HEIGHT = SCREEN_HEIGHT
+
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     for sprite in updatable:
                         sprite.kill()
                     player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
-                    asteroidfield = AsteroidField()
+                    asteroidfield = AsteroidField(SCREEN_WIDTH, SCREEN_HEIGHT)
                     score = 0
                     speed_multiplier = 1
                     difficulty = Difficulty()
